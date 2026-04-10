@@ -1,189 +1,91 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRYHOLE — Pick a Side</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-<script>
-tailwind.config = {
-  darkMode: 'class',
-  theme: {
-    extend: {
-      colors: {
-        primary: '#22d3ee'
-      }
-    }
-  }
-}
-</script>
-
-<style>
-body { transition: all 0.3s ease; }
-.glow-up { box-shadow: 0 0 40px rgba(34,211,238,0.6); }
-.glow-down { box-shadow: 0 0 40px rgba(239,68,68,0.6); }
-</style>
+  <title>DRYHOLE x402</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-black text-white flex items-center justify-center h-screen">
 
-<body class="bg-slate-900 text-white">
+<div class="text-center">
+  <h1 class="text-3xl mb-6 font-bold">DRYHOLE x402</h1>
 
-<!-- NAVBAR -->
-<header class="fixed top-0 w-full z-50 bg-transparent" id="nav">
-  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between">
-    <h1 class="font-bold text-lg">DRYHOLE</h1>
-
-    <button id="themeToggle">🌙</button>
+  <div class="mb-4">
+    Balance: <span id="balance">0</span>
   </div>
-</header>
 
-<!-- HERO -->
-<section class="min-h-screen flex flex-col items-center justify-center text-center px-6">
-  <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-    PICK A SIDE
-  </h1>
+  <div class="mb-6 text-xl" id="result">
+    Ready to drill...
+  </div>
 
-  <p class="text-gray-400 mb-8">
-    You don't trade. You choose. You win — or get drilled.
-  </p>
-
-  <button onclick="enterArena()" class="bg-cyan-400 text-black px-6 py-3 rounded-lg hover:scale-105">
-    ENTER ARENA
+  <button onclick="drill()"
+    class="bg-purple-600 hover:bg-purple-800 px-8 py-4 rounded-xl text-lg">
+    DRILL ($0.001)
   </button>
-</section>
 
-<!-- ARENA -->
-<section id="arena" class="hidden py-20 px-6 text-center">
-
-  <h2 class="text-3xl mb-6">UP or DOWN?</h2>
-
-  <!-- TIMER -->
-  <div class="text-xl mb-4">
-    Round ends in: <span id="timer">60</span>s
-  </div>
-
-  <!-- POOL -->
-  <div class="flex justify-center gap-10 mb-6">
-    <div>
-      <div class="text-green-400 text-xl">UP</div>
-      <div id="upPool">0</div>
-    </div>
-
-    <div>
-      <div class="text-red-400 text-xl">DOWN</div>
-      <div id="downPool">0</div>
-    </div>
-  </div>
-
-  <!-- INPUT -->
-  <input id="amount" type="number" placeholder="Amount"
-    class="p-3 rounded bg-slate-800 mb-4 w-40 text-center"/>
-
-  <!-- BUTTONS -->
-  <div class="flex justify-center gap-6">
-    <button onclick="bet('up')" class="bg-green-500 px-6 py-3 rounded-lg hover:scale-105">
-      UP 📈
-    </button>
-
-    <button onclick="bet('down')" class="bg-red-500 px-6 py-3 rounded-lg hover:scale-105">
-      DOWN 📉
+  <div class="mt-4">
+    <button onclick="double()"
+      class="bg-red-600 px-6 py-2 rounded-lg">
+      DOUBLE OR NOTHING
     </button>
   </div>
-
-  <!-- RESULT -->
-  <div id="result" class="mt-8 text-lg"></div>
-
-  <!-- LOG -->
-  <div id="log" class="mt-6 max-w-md mx-auto text-left text-sm opacity-70"></div>
-
-</section>
+</div>
 
 <script>
+let balance = 0;
+let lastReward = 0;
 
-/* THEME */
-const toggle = document.getElementById('themeToggle')
-toggle.onclick = () => {
-  document.documentElement.classList.toggle('dark')
-  localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-}
-if(localStorage.theme === 'light') document.documentElement.classList.remove('dark')
+async function drill() {
+  const res = await fetch("/drill", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-paid": "true" // simulate payment
+    }
+  });
 
-/* ENTER */
-function enterArena(){
-  document.getElementById('arena').classList.remove('hidden')
-  window.scrollTo({ top: document.getElementById('arena').offsetTop, behavior: 'smooth' })
-}
+  const data = await res.json();
 
-/* GAME STATE */
-let upPool = 0
-let downPool = 0
-let time = 60
-let userBet = null
-
-/* TIMER LOOP */
-setInterval(() => {
-  time--
-  document.getElementById('timer').innerText = time
-
-  if(time <= 0){
-    resolveRound()
-    time = 60
+  if (data.result === "lose") {
+    document.getElementById("result").innerText = "💀 RUGGED";
+    lastReward = 0;
   }
-},1000)
 
-/* BET */
-function bet(side){
-  const amt = parseInt(document.getElementById('amount').value)
-  if(!amt) return alert("Enter amount")
+  if (data.result === "win") {
+    document.getElementById("result").innerText =
+      "✅ WIN +" + data.reward;
+    lastReward = data.reward;
+    balance += data.reward;
+  }
 
-  userBet = side
+  if (data.result === "jackpot") {
+    document.getElementById("result").innerText =
+      "💥 JACKPOT +" + data.reward;
+    lastReward = data.reward;
+    balance += data.reward;
+  }
 
-  if(side === 'up') upPool += amt
-  else downPool += amt
-
-  updatePool()
-
-  log(`You bet ${amt} on ${side.toUpperCase()}`)
+  document.getElementById("balance").innerText = balance;
 }
 
-/* UPDATE */
-function updatePool(){
-  document.getElementById('upPool').innerText = upPool
-  document.getElementById('downPool').innerText = downPool
-}
+async function double() {
+  if (lastReward <= 0) return;
 
-/* LOG */
-function log(msg){
-  const el = document.getElementById('log')
-  el.innerHTML += `<div>> ${msg}</div>`
-  el.scrollTop = el.scrollHeight
-}
+  const win = Math.random() < 0.5;
 
-/* RESOLVE */
-function resolveRound(){
-
-  const result = Math.random() > 0.5 ? 'up' : 'down'
-  const resEl = document.getElementById('result')
-
-  if(userBet === result){
-    resEl.innerHTML = "🟢 YOU WIN"
-    document.body.classList.add('glow-up')
-    setTimeout(()=> document.body.classList.remove('glow-up'),1000)
+  if (win) {
+    lastReward *= 2;
+    balance += lastReward;
+    document.getElementById("result").innerText =
+      "🔥 DOUBLE SUCCESS +" + lastReward;
   } else {
-    resEl.innerHTML = "💀 YOU GOT DRILLED"
-    document.body.classList.add('glow-down')
-    setTimeout(()=> document.body.classList.remove('glow-down'),1000)
+    balance -= lastReward;
+    document.getElementById("result").innerText =
+      "💀 LOST EVERYTHING";
+    lastReward = 0;
   }
 
-  log(`Round result: ${result.toUpperCase()}`)
-
-  upPool = 0
-  downPool = 0
-  userBet = null
-  updatePool()
+  document.getElementById("balance").innerText = balance;
 }
-
 </script>
 
 </body>
