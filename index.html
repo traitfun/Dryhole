@@ -1,164 +1,106 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DRYHOLE - Dryhole</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRYHOLE — Pick a Side</title>
 
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: '#22d3ee'
-          }
-        }
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        primary: '#22d3ee'
       }
     }
-  </script>
+  }
+}
+</script>
 
-  <style>
-    /* Smooth transitions */
-    * { transition: all 0.3s ease; }
-  </style>
+<style>
+body { transition: all 0.3s ease; }
+.glow-up { box-shadow: 0 0 40px rgba(34,211,238,0.6); }
+.glow-down { box-shadow: 0 0 40px rgba(239,68,68,0.6); }
+</style>
 </head>
 
-<body class="bg-slate-900 text-white dark:bg-slate-900">
+<body class="bg-slate-900 text-white">
 
 <!-- NAVBAR -->
-<header id="navbar" class="fixed w-full z-50 top-0 transition-all">
-  <div class="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
-    <h1 class="text-xl font-bold">DRYHOLE</h1>
+<header class="fixed top-0 w-full z-50 bg-transparent" id="nav">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between">
+    <h1 class="font-bold text-lg">DRYHOLE</h1>
 
-    <nav class="hidden md:flex gap-6">
-      <a href="#features" class="hover:text-cyan-400">Features</a>
-      <a href="#demo" class="hover:text-cyan-400">Demo</a>
-      <a href="#pricing" class="hover:text-cyan-400">Pricing</a>
-    </nav>
-
-    <div class="flex items-center gap-4">
-      <!-- Toggle -->
-      <button id="themeToggle">🌙</button>
-
-      <!-- Mobile -->
-      <button id="menuBtn" class="md:hidden">☰</button>
-    </div>
-  </div>
-
-  <!-- Mobile menu -->
-  <div id="mobileMenu" class="hidden px-6 pb-4 md:hidden">
-    <a href="#features" class="block py-2">Features</a>
-    <a href="#demo" class="block py-2">Demo</a>
-    <a href="#pricing" class="block py-2">Pricing</a>
+    <button id="themeToggle">🌙</button>
   </div>
 </header>
 
 <!-- HERO -->
-<section class="min-h-screen flex items-center justify-center text-center px-6">
-  <div>
-    <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">
-      LuminaBase
-    </h1>
-    <p class="text-lg mb-6 text-gray-300">
-      Your ultimate base template for modern web projects
-    </p>
+<section class="min-h-screen flex flex-col items-center justify-center text-center px-6">
+  <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+    PICK A SIDE
+  </h1>
 
-    <div class="flex justify-center gap-4 mb-10">
-      <button class="bg-cyan-400 text-black px-6 py-3 rounded-lg hover:scale-105">
-        Get Template
-      </button>
-      <button class="border border-cyan-400 px-6 py-3 rounded-lg hover:bg-cyan-400 hover:text-black">
-        Watch Demo
-      </button>
+  <p class="text-gray-400 mb-8">
+    You don't trade. You choose. You win — or get drilled.
+  </p>
+
+  <button onclick="enterArena()" class="bg-cyan-400 text-black px-6 py-3 rounded-lg hover:scale-105">
+    ENTER ARENA
+  </button>
+</section>
+
+<!-- ARENA -->
+<section id="arena" class="hidden py-20 px-6 text-center">
+
+  <h2 class="text-3xl mb-6">UP or DOWN?</h2>
+
+  <!-- TIMER -->
+  <div class="text-xl mb-4">
+    Round ends in: <span id="timer">60</span>s
+  </div>
+
+  <!-- POOL -->
+  <div class="flex justify-center gap-10 mb-6">
+    <div>
+      <div class="text-green-400 text-xl">UP</div>
+      <div id="upPool">0</div>
     </div>
 
-    <!-- Mockup -->
-    <div class="w-80 h-48 mx-auto bg-gradient-to-r from-purple-500 to-cyan-400 rounded-xl shadow-lg"></div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section id="features" class="py-20 px-6 max-w-6xl mx-auto">
-  <h2 class="text-3xl font-bold text-center mb-10">Features</h2>
-  <div class="grid md:grid-cols-3 gap-6">
-    <div class="p-6 bg-slate-800 rounded-xl">⚡ Fast Performance</div>
-    <div class="p-6 bg-slate-800 rounded-xl">🎨 Modern UI</div>
-    <div class="p-6 bg-slate-800 rounded-xl">🔒 Secure</div>
-    <div class="p-6 bg-slate-800 rounded-xl">📱 Responsive</div>
-    <div class="p-6 bg-slate-800 rounded-xl">🤖 AI Ready</div>
-    <div class="p-6 bg-slate-800 rounded-xl">☁️ Cloud Ready</div>
-  </div>
-</section>
-
-<!-- DEMO CHAT -->
-<section id="demo" class="py-20 px-6 text-center">
-  <h2 class="text-3xl font-bold mb-6">Live Demo</h2>
-
-  <div class="max-w-md mx-auto bg-slate-800 p-4 rounded-xl">
-    <div id="chatBox" class="h-48 overflow-y-auto text-left mb-4"></div>
-
-    <input id="chatInput" class="w-full p-2 rounded bg-slate-700" placeholder="Type..." />
-  </div>
-</section>
-
-<!-- HOW -->
-<section class="py-20 text-center">
-  <h2 class="text-3xl mb-10">How It Works</h2>
-  <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-    <div>1. Setup</div>
-    <div>2. Customize</div>
-    <div>3. Launch</div>
-  </div>
-</section>
-
-<!-- TESTIMONIAL -->
-<section class="py-20 text-center">
-  <h2 class="text-3xl mb-6">Testimonials</h2>
-  <div id="testimonial" class="text-lg">"Amazing template!"</div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing" class="py-20 px-6">
-  <h2 class="text-3xl text-center mb-10">Pricing</h2>
-
-  <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-    <div class="p-6 bg-slate-800 rounded-xl">Basic</div>
-
-    <div class="p-6 bg-slate-800 rounded-xl border-2 border-cyan-400">
-      Most Popular
+    <div>
+      <div class="text-red-400 text-xl">DOWN</div>
+      <div id="downPool">0</div>
     </div>
-
-    <div class="p-6 bg-slate-800 rounded-xl">Pro</div>
   </div>
+
+  <!-- INPUT -->
+  <input id="amount" type="number" placeholder="Amount"
+    class="p-3 rounded bg-slate-800 mb-4 w-40 text-center"/>
+
+  <!-- BUTTONS -->
+  <div class="flex justify-center gap-6">
+    <button onclick="bet('up')" class="bg-green-500 px-6 py-3 rounded-lg hover:scale-105">
+      UP 📈
+    </button>
+
+    <button onclick="bet('down')" class="bg-red-500 px-6 py-3 rounded-lg hover:scale-105">
+      DOWN 📉
+    </button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result" class="mt-8 text-lg"></div>
+
+  <!-- LOG -->
+  <div id="log" class="mt-6 max-w-md mx-auto text-left text-sm opacity-70"></div>
+
 </section>
 
-<!-- FAQ -->
-<section class="py-20 px-6 max-w-4xl mx-auto">
-  <h2 class="text-3xl text-center mb-6">FAQ</h2>
-
-  <div>
-    <button class="faq w-full text-left py-3">What is this?</button>
-    <div class="hidden">A template</div>
-
-    <button class="faq w-full text-left py-3">How to use?</button>
-    <div class="hidden">Just edit</div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="py-10 text-center">
-  <form id="newsletter">
-    <input placeholder="Email" class="p-2 rounded bg-slate-700"/>
-    <button class="bg-cyan-400 text-black px-4 py-2 rounded">Subscribe</button>
-  </form>
-</footer>
-
-<!-- SCRIPT -->
 <script>
+
 /* THEME */
 const toggle = document.getElementById('themeToggle')
 toggle.onclick = () => {
@@ -167,52 +109,82 @@ toggle.onclick = () => {
 }
 if(localStorage.theme === 'light') document.documentElement.classList.remove('dark')
 
-/* NAVBAR SCROLL */
-window.addEventListener('scroll', () => {
-  const nav = document.getElementById('navbar')
-  nav.classList.toggle('bg-slate-900', window.scrollY > 50)
-})
-
-/* MOBILE */
-document.getElementById('menuBtn').onclick = () => {
-  document.getElementById('mobileMenu').classList.toggle('hidden')
+/* ENTER */
+function enterArena(){
+  document.getElementById('arena').classList.remove('hidden')
+  window.scrollTo({ top: document.getElementById('arena').offsetTop, behavior: 'smooth' })
 }
 
-/* CHAT */
-const input = document.getElementById('chatInput')
-const box = document.getElementById('chatBox')
+/* GAME STATE */
+let upPool = 0
+let downPool = 0
+let time = 60
+let userBet = null
 
-input.addEventListener('keypress', e => {
-  if(e.key === 'Enter') {
-    let msg = input.value
-    box.innerHTML += `<div>User: ${msg}</div>`
-    setTimeout(()=> {
-      box.innerHTML += `<div>Bot: Hello 👋</div>`
-    },500)
-    input.value = ''
+/* TIMER LOOP */
+setInterval(() => {
+  time--
+  document.getElementById('timer').innerText = time
+
+  if(time <= 0){
+    resolveRound()
+    time = 60
   }
-})
+},1000)
 
-/* TESTIMONIAL */
-const texts = ["Amazing!", "Love it!", "Best template"]
-let i=0
-setInterval(()=>{
-  document.getElementById('testimonial').innerText = texts[i++%texts.length]
-},3000)
+/* BET */
+function bet(side){
+  const amt = parseInt(document.getElementById('amount').value)
+  if(!amt) return alert("Enter amount")
 
-/* FAQ */
-document.querySelectorAll('.faq').forEach(btn=>{
-  btn.onclick = () => {
-    btn.nextElementSibling.classList.toggle('hidden')
-  }
-})
+  userBet = side
 
-/* NEWSLETTER */
-document.getElementById('newsletter').onsubmit = e=>{
-  e.preventDefault()
-  alert("Subscribed!")
+  if(side === 'up') upPool += amt
+  else downPool += amt
+
+  updatePool()
+
+  log(`You bet ${amt} on ${side.toUpperCase()}`)
 }
+
+/* UPDATE */
+function updatePool(){
+  document.getElementById('upPool').innerText = upPool
+  document.getElementById('downPool').innerText = downPool
+}
+
+/* LOG */
+function log(msg){
+  const el = document.getElementById('log')
+  el.innerHTML += `<div>> ${msg}</div>`
+  el.scrollTop = el.scrollHeight
+}
+
+/* RESOLVE */
+function resolveRound(){
+
+  const result = Math.random() > 0.5 ? 'up' : 'down'
+  const resEl = document.getElementById('result')
+
+  if(userBet === result){
+    resEl.innerHTML = "🟢 YOU WIN"
+    document.body.classList.add('glow-up')
+    setTimeout(()=> document.body.classList.remove('glow-up'),1000)
+  } else {
+    resEl.innerHTML = "💀 YOU GOT DRILLED"
+    document.body.classList.add('glow-down')
+    setTimeout(()=> document.body.classList.remove('glow-down'),1000)
+  }
+
+  log(`Round result: ${result.toUpperCase()}`)
+
+  upPool = 0
+  downPool = 0
+  userBet = null
+  updatePool()
+}
+
 </script>
 
 </body>
-  </html>
+</html>
